@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(express.json());
 
@@ -194,8 +194,8 @@ async function startServer() {
     });
   }
 
-  app.listen(port, () => {
-    console.log(`DBT Rakshak server running on port ${port}`);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`DBT Rakshak server running on http://0.0.0.0:${port}`);
   });
 }
 
