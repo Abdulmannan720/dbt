@@ -1,0 +1,6 @@
+{
+  "name": "Yojana Setu — Scheme Matcher",
+  "description": "Deterministic government scheme eligibility matcher with voice input, honest proxy caveats, multilingual Hindi/English support, and CSC operator application summaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
