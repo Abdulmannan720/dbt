@@ -18,6 +18,7 @@ import { ApplicationPackModal } from './components/ApplicationPackModal';
 import { DatabaseModal } from './components/DatabaseModal';
 import { DataPage } from './components/DataPage';
 import { TrackedApplications } from './components/TrackedApplications';
+import { LoginPage, AuthenticatedUser } from './components/LoginPage';
 import {
   CheckCircle2,
   SlidersHorizontal,
@@ -44,7 +45,36 @@ const BLANK_PROFILE: ApplicantProfile = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'matcher' | 'data' | 'tracker'>('matcher');
+  const [activeTab, setActiveTab] = useState<'matcher' | 'data' | 'tracker' | 'login'>('login');
+  const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(() => {
+    try {
+      const saved = localStorage.getItem('dbt_rakshak_user');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn(e);
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem('dbt_rakshak_user', JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem('dbt_rakshak_user');
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  }, [currentUser]);
+
+  // Auth Gate: Restrict access to rest of the site until user logs in
+  useEffect(() => {
+    if (!currentUser && activeTab !== 'login') {
+      setActiveTab('login');
+    }
+  }, [currentUser, activeTab]);
+
   // Initialize with Kamala 67 to guarantee the strong SIH opening moment
   const defaultPersona = DEMO_PERSONAS[0];
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(
@@ -210,6 +240,8 @@ export default function App() {
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        currentUser={currentUser}
+        onLogout={() => setCurrentUser(null)}
         onReset={handleClearProfile}
         onStartVoice={() => {
           setActiveTab('matcher');
@@ -411,6 +443,28 @@ export default function App() {
               </div>
             </div>
           </>
+        )}
+
+        {/* DBT Portal Login Page Tab */}
+        {activeTab === 'login' && (
+          <LoginPage
+            currentUser={currentUser}
+            onLoginSuccess={(user) => {
+              setCurrentUser(user);
+              setProfile(user.profile);
+              setPersonaName(user.name);
+              setActiveTab('matcher');
+            }}
+            onLogout={() => {
+              setCurrentUser(null);
+              setActiveTab('login');
+            }}
+            onGoToMatcher={(loadedProfile, name) => {
+              if (loadedProfile) setProfile(loadedProfile);
+              if (name) setPersonaName(name);
+              setActiveTab('matcher');
+            }}
+          />
         )}
 
         {/* Data & Transparency Tab */}

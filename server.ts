@@ -36,7 +36,7 @@ let dbStatus = {
 function getConnectionString(): string {
   return (
     process.env.DATABASE_URL ||
-    'postgresql://postgres:[YOUR-PASSWORD]@db.mbfouhyodhwbyqrzujuj.supabase.co:5432/postgres'
+    'postgresql://postgres:wPoOmHGPPYX7wKIZ@db.mbfouhyodhwbyqrzujuj.supabase.co:5432/postgres'
   );
 }
 
@@ -44,7 +44,7 @@ async function initDatabase(customPassword?: string) {
   let connStr = getConnectionString();
 
   if (customPassword) {
-    connStr = connStr.replace(/\[YOUR-PASSWORD\]|:[^@]+@/, `:${encodeURIComponent(customPassword)}@`);
+    connStr = `postgresql://postgres:${encodeURIComponent(customPassword)}@db.mbfouhyodhwbyqrzujuj.supabase.co:5432/postgres`;
   }
 
   dbStatus.lastChecked = new Date().toISOString();
